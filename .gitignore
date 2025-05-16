@@ -14,3 +14,13 @@ earthquake_scaler.pkl
 kmeans_clusters_3d.html
 kmeans_clusters_map_plotly.html
 kmeans_clusters_map.html
+components/__pycache__/clustering.cpython-311.pyc
+components/__pycache__/data_explorer.cpython-311.pyc
+components/__pycache__/home.cpython-311.pyc
+components/__pycache__/map_viewer.cpython-311.pyc
+components/__pycache__/model_predictor.cpython-311.pyc
+components/__pycache__/risk_assessment.cpython-311.pyc
+components/__pycache__/sidebar.cpython-311.pyc
+utils/__pycache__/data_loader.cpython-311.pyc
+utils/__pycache__/map_utils.cpython-311.pyc
+utils/__pycache__/model_utils.cpython-311.pyc
