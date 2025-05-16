@@ -30,7 +30,7 @@ def load_data():
     """Load all required data"""
     earthquake_df = load_earthquake_data()
     fault_gdf = load_fault_data()
-    model, scaler = load_model()
+    model, scaler = load_model()  # model will be a pipeline or a model based on what's available
     city_risk_df = get_city_risk_data()
     return earthquake_df, fault_gdf, model, scaler, city_risk_df
 

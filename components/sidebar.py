@@ -22,7 +22,7 @@ def create_sidebar():
     # Display app info
     st.sidebar.markdown("---")
     st.sidebar.info(
-        "This app analyzes Turkish earthquake data using both supervised and unsupervised "
+        "This app analyzes Turkey's earthquake data using both supervised and unsupervised "
         "machine learning techniques to predict earthquake magnitudes and identify risk zones."
     )
     

@@ -29,11 +29,17 @@ def load_fault_data():
 def load_model():
     """Load the trained earthquake prediction model"""
     try:
-        model = joblib.load('models/earthquake_magnitude_model.pkl')
-        scaler = joblib.load('models/earthquake_scaler.pkl')
-        return model, scaler
+        # Try to load the pipeline (new approach)
+        pipeline = joblib.load('models/earthquake_pipeline.pkl')
+        return pipeline, None  # Return None for scaler for compatibility
     except FileNotFoundError:
-        return None, None
+        try:
+            # Fallback to old approach
+            model = joblib.load('models/earthquake_magnitude_model.pkl')
+            scaler = joblib.load('models/earthquake_scaler.pkl')
+            return model, scaler
+        except FileNotFoundError:
+            return None, None
         
 def get_city_risk_data():
     """Load or generate city risk assessment data"""

@@ -4,8 +4,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
-import plotly.express as px
+import os
 
 def show_clustering(df):
     """Clustering visualization and analysis page"""
@@ -70,28 +69,16 @@ def show_kmeans_analysis(df):
     
     st.dataframe(cluster_analysis.round(2))
     
-    # Interactive 3D visualization - use all data points
+    # Use pre-rendered 3D visualization
     st.write("### 3D Cluster Visualization")
-    fig = px.scatter_3d(
-        df,  # Use all data points
-        x='Longitude', 
-        y='Latitude', 
-        z='Depth',
-        color='KMeans_Cluster', 
-        size='Magnitude',
-        hover_data=['Magnitude'],
-        title='3D Visualization of K-Means Clusters'
-    )
     
-    # Ensure proper axis orientation - fixed to match notebook
-    fig.update_layout(scene=dict(
-        xaxis_title='Longitude',
-        yaxis_title='Latitude',
-        zaxis_title='Depth (km)',
-        zaxis=dict(autorange="reversed")  # Reverse depth axis so deeper is lower
-    ))
+    # Check for pre-rendered visualizations
+    kmeans_map_path = "maps/kmeans_clusters_map_plotly.html"
     
-    st.plotly_chart(fig)
+    if os.path.exists(kmeans_map_path):
+        st.components.v1.html(open(kmeans_map_path, 'r', encoding='utf-8').read(), height=600)
+    else:
+        st.error("Pre-rendered K-means visualization not found. Please run the notebook to generate it.")
 
 def show_dbscan_analysis(df):
     """Show DBSCAN clustering analysis"""
@@ -139,25 +126,13 @@ def show_dbscan_analysis(df):
         
         st.dataframe(cluster_analysis.round(2))
     
-    # Interactive 3D visualization - use all data points
+    # Use pre-rendered 3D visualization
     st.write("### 3D Cluster Visualization")
-    fig = px.scatter_3d(
-        df,  # Use all data points
-        x='Longitude', 
-        y='Latitude', 
-        z='Depth',
-        color='DBSCAN_Cluster', 
-        size='Magnitude',
-        hover_data=['Magnitude'],
-        title='3D Visualization of DBSCAN Clusters'
-    )
     
-    # Ensure proper axis orientation - fixed to match notebook
-    fig.update_layout(scene=dict(
-        xaxis_title='Longitude',
-        yaxis_title='Latitude',
-        zaxis_title='Depth (km)',
-        zaxis=dict(autorange="reversed")  # Reverse depth axis so deeper is lower
-    ))
+    # Check for pre-rendered visualizations
+    dbscan_map_path = "maps/dbscan_clusters_map_plotly.html"
     
-    st.plotly_chart(fig)
+    if os.path.exists(dbscan_map_path):
+        st.components.v1.html(open(dbscan_map_path, 'r', encoding='utf-8').read(), height=600)
+    else:
+        st.error("Pre-rendered DBSCAN visualization not found. Please run the notebook to generate it.")

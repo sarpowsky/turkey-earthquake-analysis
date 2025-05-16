@@ -18,13 +18,13 @@ def show_risk_assessment(df, fault_gdf, city_risk_df=None):
         st.warning("Risk zone data not available in the dataset. Showing limited information.")
     
     # Tabs for different risk visualizations
-    tab1, tab2 = st.tabs(["Risk Zone Analysis", "City Risk Assessment"])
+    tab1, tab2 = st.tabs(["City Risk Assessment", "Risk Zone Analysis"])
     
     with tab1:
-        show_risk_zone_analysis(df, fault_gdf, has_risk_data)
-    
-    with tab2:
         show_city_risk_analysis(df, fault_gdf, city_risk_df)
+
+    with tab2:
+        show_risk_zone_analysis(df, fault_gdf, has_risk_data)
 
 def show_risk_zone_analysis(df, fault_gdf, has_risk_data):
     """Show risk zone analysis"""

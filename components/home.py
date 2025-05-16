@@ -1,58 +1,144 @@
 # components/home.py
 # Path: /components/home.py
 import streamlit as st
+import os
 
 def show_home():
     """Home page with project overview"""
-    st.title("Turkish Earthquake Analysis Project")
+    # Apply custom CSS for better visual design
+    apply_custom_css()
+    
+    # Main title and introduction
+    st.markdown("<h1 class='main-title'>🌍 Turkey Earthquake Analysis by sarpowsky</h1>", unsafe_allow_html=True)
     
     st.write("""
-    This application presents a comprehensive analysis of Turkish earthquakes using machine learning techniques.
-    The project uses both supervised and unsupervised learning to predict earthquake magnitudes and identify risk zones.
+    This application presents a comprehensive analysis of Turkey's earthquakes using machine learning techniques.
+    The project combines supervised learning for magnitude prediction and unsupervised learning to identify risk zones.
+    """)
+
+    st.markdown("""
+    <div class='personal-note'>
+    <i>As a computer engineering student passionate about ML, I created this analysis to help 
+    visualize earthquake patterns in Turkey and predict future magnitudes using both supervised 
+    and unsupervised learning techniques.</i>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown(""" """, unsafe_allow_html=True)
+    
+    # Show map preview if available
+    display_map_preview()
+    
+    # Project overview section
+    st.markdown("<h2 class='section-header'>Project Overview</h2>", unsafe_allow_html=True)
+    
+    # Display key metrics in three columns
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric(label="Data Timespan", value="100+ Years")
+    with col2:
+        st.metric(label="Min. Magnitude", value="4.0+")
+    with col3:
+        st.metric(label="ML Models", value="Multiple")
+    
+    # Project goals
+    st.markdown("""
+    - **📊 Data Source**: AFAD earthquake dataset of Turkish earthquakes (>4.0 magnitude) from the last 100 years
+    - **🎯 Primary Goal**: Predict earthquake magnitude using supervised learning (regression)
+    - **🔍 Secondary Goal**: Identify fault line risk zones using clustering methods
     """)
     
-    # Project overview
-    st.subheader("Project Overview")
-    st.write("""
-    - **Data Source**: AFAD earthquake dataset of Turkish earthquakes (>4.0 magnitude) from the last 100 years
-    - **Primary Goal**: Predict earthquake magnitude using supervised learning (regression)
-    - **Secondary Goal**: Identify fault line risk zones using clustering methods
-    """)
+    # Features overview section
+    st.markdown("<h2 class='section-header'>Application Features</h2>", unsafe_allow_html=True)
     
-    # Features overview
-    st.subheader("Application Features")
+    # Display features in a 2-column layout
+    display_features_grid()
     
+    # Navigation instructions
+    st.markdown("<div class='nav-info'>", unsafe_allow_html=True)
+    st.markdown("🧭 **Navigation:** Use the sidebar to navigate between different sections of the application.")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+def apply_custom_css():
+    """Apply custom CSS styling for better visual appearance"""
+    st.markdown("""
+    <style>
+    .main-title {
+        font-size: 2.5rem;
+        color: #1E88E5;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .section-header {
+        color: #0D47A1;
+        border-bottom: 2px solid #90CAF9;
+        padding-bottom: 0.5rem;
+    }
+    .feature-title {
+        color: #1565C0;
+        font-weight: bold;
+    }
+    .nav-info {
+        background-color: #E1F5FE;
+        border-left: 4px solid #29B6F6;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 1rem;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+def display_map_preview():
+    """Display a map preview if available or show placeholder"""
+    # Check if map file exists
+    if os.path.exists("maps/earthquake_map.html"):
+        st.components.v1.html(open("maps/earthquake_map.html", 'r', encoding='utf-8').read(), height=300)
+    elif os.path.exists("maps/earthquake_risk_map.html"):
+        st.components.v1.html(open("maps/earthquake_risk_map.html", 'r', encoding='utf-8').read(), height=300)
+
+def display_features_grid():
+    """Display application features in a responsive grid layout"""
+    # Create two columns for feature display
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("#### Data Exploration")
-        st.write("""
-        - Basic dataset statistics and visualizations
-        - Temporal and geographic analysis of earthquakes
+        # Data Exploration
+        st.markdown("<h4 class='feature-title'>📊 Data Exploration</h4>", unsafe_allow_html=True)
+        st.markdown("""
+        - Dataset statistics and visualizations
+        - Temporal and geographic analysis
         - Magnitude and depth relationships
+        - Correlation analysis
         """)
+        st.markdown("</div>", unsafe_allow_html=True)
         
-        st.markdown("#### Interactive Maps")
-        st.write("""
+        # Interactive Maps
+        st.markdown("<h4 class='feature-title'>🗺️ Interactive Maps</h4>", unsafe_allow_html=True)
+        st.markdown("""
         - Earthquake distribution maps
         - Cluster visualization
         - Risk zone identification
+        - Fault line overlays
         """)
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
-        st.markdown("#### Magnitude Prediction")
-        st.write("""
-        - Machine learning model for magnitude prediction
+        # Magnitude Prediction
+        st.markdown("<h4 class='feature-title'>📈 Magnitude Prediction</h4>", unsafe_allow_html=True)
+        st.markdown("""
+        - Machine learning model for prediction
         - Feature importance analysis
         - Interactive prediction interface
+        - Model performance metrics
         """)
+        st.markdown("</div>", unsafe_allow_html=True)
         
-        st.markdown("#### Risk Assessment")
-        st.write("""
+        # Risk Assessment
+        st.markdown("<h4 class='feature-title'>⚠️ Risk Assessment</h4>", unsafe_allow_html=True)
+        st.markdown("""
         - Risk zone classification
         - City-specific risk analysis
         - Population impact assessment
+        - Historical pattern recognition
         """)
-    
-    # Navigation instructions
-    st.info("Use the sidebar to navigate between different sections of the application.")
+        st.markdown("</div>", unsafe_allow_html=True)
