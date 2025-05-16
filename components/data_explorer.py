@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
+import plotly.express as px
 
 def show_data_explorer(df):
     """Data exploration page"""
@@ -38,14 +38,23 @@ def show_data_explorer(df):
     )
     
     if viz_type == "Geographic Distribution":
-        # Use pre-rendered map for geographic distribution
-        geo_map_path = "maps/earthquake_map.html"
-        
-        if os.path.exists(geo_map_path):
-            st.write("Map showing the geographic distribution of earthquakes in Turkey.")
-            st.components.v1.html(open(geo_map_path, 'r', encoding='utf-8').read(), height=600)
-        else:
-            st.error("Pre-rendered geographic map not found. Please run the notebook to generate it.")
+        # Use plotly for interactive plotting - use entire dataset without sampling
+        fig = px.scatter_mapbox(
+            df,  # Use full dataset
+            lat='Latitude', 
+            lon='Longitude',
+            color='Magnitude',
+            size='Magnitude',
+            color_continuous_scale='Viridis',
+            size_max=15,
+            zoom=5,
+            center={"lat": 38.5, "lon": 35.5},
+            mapbox_style="open-street-map",
+            title='Geographic Distribution of Earthquakes',
+            hover_data=['Depth', 'Magnitude']
+        )
+        fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0})
+        st.plotly_chart(fig)
     
     elif viz_type == "Magnitude Distribution":
         fig, ax = plt.subplots(figsize=(10, 6))
