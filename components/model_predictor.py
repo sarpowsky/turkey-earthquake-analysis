@@ -115,7 +115,7 @@ def show_model_predictor(df, pipeline, scaler=None):
                 st.session_state.nearest_fault_name = closest_fault.get('FAULT_NAME', "Unknown")
                 
                 # Force refresh
-                st.experimental_rerun()
+                st.rerun()
         
         # Display current selected location with fault info
         if has_fault_data:
