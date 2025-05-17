@@ -9,7 +9,7 @@ def show_home():
     apply_custom_css()
     
     # Main title and introduction
-    st.markdown("<h1 class='main-title'>🌍 Turkey Earthquake Analysis by sarpowsky</h1>", unsafe_allow_html=True)
+    st.markdown("<div class='title-container'><h1 class='main-title'><span class='turq'>Turq</span><span class='uake'>uake</span></h1></div>", unsafe_allow_html=True)
     
     st.write("""
     This application presents a comprehensive analysis of Turkey's earthquakes using machine learning techniques.
@@ -18,7 +18,7 @@ def show_home():
 
     st.markdown("""
     <div class='personal-note'>
-    <i>As a computer engineering student passionate about ML, I created this analysis to help 
+    <i>As someone passionate about ML, I created Turquake to help 
     visualize earthquake patterns in Turkey and predict future magnitudes using both supervised 
     and unsupervised learning techniques.</i>
     </div>
@@ -55,35 +55,50 @@ def show_home():
     display_features_grid()
     
     # Navigation instructions
-    st.markdown("<div class='nav-info'>", unsafe_allow_html=True)
-    st.markdown("🧭 **Navigation:** Use the sidebar to navigate between different sections of the application.")
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<div class='nav-info'><i>🧭 **Navigation:** Use the sidebar to navigate between different sections of the application.</i></div>", unsafe_allow_html=True)
 
 def apply_custom_css():
     """Apply custom CSS styling for better visual appearance"""
     st.markdown("""
     <style>
-    .main-title {
-        font-size: 2.5rem;
-        color: #1E88E5;
+    .title-container {
         text-align: center;
         margin-bottom: 1.5rem;
     }
+    .main-title {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+    }
+    .turq {
+        color: #E30A17; /* Turkish flag red */
+        font-weight: bold;
+    }
+    .uake {
+        color: #FFFFFF; /* White */
+        font-weight: bold;
+    }
     .section-header {
-        color: #0D47A1;
-        border-bottom: 2px solid #90CAF9;
+        color: #E30A17; /* Turkish flag red */
+        border-bottom: 2px solid #E30A17;
         padding-bottom: 0.5rem;
     }
     .feature-title {
-        color: #1565C0;
+        color: #FFFFFF; /* White */
         font-weight: bold;
     }
     .nav-info {
-        background-color: #E1F5FE;
-        border-left: 4px solid #29B6F6;
+        background-color: rgba(227, 10, 23, 0.1); /* Light red background */
+        border-left: 4px solid #E30A17;
         padding: 15px;
         border-radius: 5px;
         margin-top: 1rem;
+    }
+    .personal-note {
+        background-color: rgba(255, 255, 255, 0.1); 
+        border-left: 4px solid #E30A17;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 1rem 0;
     }
     </style>
     """, unsafe_allow_html=True)

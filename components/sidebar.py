@@ -4,7 +4,15 @@ import streamlit as st
 
 def create_sidebar():
     """Create the navigation sidebar"""
-    st.sidebar.title("Earthquake Analysis")
+    # Apply custom sidebar styling
+    st.markdown("""
+    <style>
+    .sidebar-title {
+        color: #E30A17;
+        font-weight: bold;
+    }
+    </style>
+    """, unsafe_allow_html=True)
     
     # Navigation options
     pages = {
@@ -22,7 +30,7 @@ def create_sidebar():
     # Display app info
     st.sidebar.markdown("---")
     st.sidebar.info(
-        "This app analyzes Turkey's earthquake data using both supervised and unsupervised "
+        "Turquake analyzes Turkey's earthquake data using both supervised and unsupervised "
         "machine learning techniques to predict earthquake magnitudes and identify risk zones."
     )
     
