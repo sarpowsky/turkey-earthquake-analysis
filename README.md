@@ -69,7 +69,6 @@ The project is deployed as an interactive Streamlit application with:
 ### Supervised Learning
 - The best-performing model for magnitude prediction was XGBoost with RMSE of 0.2309
 - Most important features for prediction included: Year, distance_to_fault,magnitude_fault_interaction, Depth, DepthByLat, nearest_fault_importance 
-- The model showed [Your Observation about Performance with Different Magnitude Ranges]
 
 ### Unsupervised Learning
 - K-Means clustering identified High-171 Medium-6501,Low-3157 distinct earthquake risk zones across Turkey
