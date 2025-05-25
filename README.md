@@ -105,7 +105,7 @@ turquake/
 ```
 
 ### Kaggle Notebook Links
-* Supervised Learning Notebook: https://www.kaggle.com/code/sarpowsky/supervised
+* Supervised Learning Notebook: https://www.kaggle.com/code/sarpowsky/supervised9896c7850e
 * Unsupervised Learning Notebook: https://www.kaggle.com/code/sarpowsky/unsupervised
 
 ### Bonus Implementations

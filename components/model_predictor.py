@@ -1,4 +1,3 @@
-# components/model_predictor.py
 # Path: /components/model_predictor.py
 import streamlit as st
 import pandas as pd
@@ -6,10 +5,131 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import folium
-from streamlit_folium import folium_static
 import datetime
 from streamlit_folium import st_folium
 from shapely.geometry import Point
+
+def get_all_expected_features():
+    """Get complete feature list matching trained model exactly"""
+    return [
+        # Base features
+        'Longitude', 'Latitude', 'Depth', 'Year', 'Month', 'Day', 'DayOfWeek',
+        
+        # Temporal features
+        'DayOfYear', 'WeekOfYear', 'IsWeekend', 'MonthSin', 'MonthCos', 
+        'DayOfYearSin', 'DayOfYearCos', 'day_of_year_normalized',
+        
+        # Spatial features
+        'PrevQuakesInGrid', 'DistFromPrev', 'DaysSinceLastQuake', 'PrevMagnitude', 
+        'DepthByLat', 'DepthByLon',
+        
+        # Fault features
+        'distance_to_fault', 'nearest_fault_importance', 'weighted_fault_risk',
+        'fault_complexity_score', 'fault_count_100km', 'avg_fault_distance',
+        'dominant_fault_importance', 'fault_length_sum', 'fault_intersection_count',
+        'fault_intersection_importance', 'complexity_score', 'fault_importance_sum',
+        
+        # Density features
+        'density_10km', 'density_25km', 'density_50km', 'density_100km',
+        'avg_mag_10km', 'avg_mag_25km', 'avg_mag_50km', 'avg_mag_100km',
+        'max_mag_10km', 'max_mag_25km', 'max_mag_50km', 'max_mag_100km',
+        'mag_std_10km', 'mag_std_25km', 'mag_std_50km', 'mag_std_100km',
+        'recent_activity_10km', 'recent_activity_25km', 'recent_activity_50km', 'recent_activity_100km',
+        
+        # Regional activity
+        'regional_activity_30d', 'regional_activity_90d', 'regional_activity_365d',
+        'regional_max_mag_30d', 'regional_max_mag_90d', 'regional_max_mag_365d',
+        
+        # Interaction features
+        'depth_magnitude_interaction', 'location_depth_interaction',
+        'seasonal_location_lat', 'seasonal_location_lon',
+        'multi_fault_complexity', 'magnitude_fault_interaction', 'weighted_magnitude_interaction',
+        
+        # Polynomial features
+        'poly_Depth weighted_fault_risk', 'poly_Depth fault_complexity_score',
+        'poly_weighted_fault_risk fault_complexity_score'
+    ]
+
+def create_complete_feature_set(lat, lon, depth, fault_distance, fault_importance):
+    """Create complete feature set with all expected features"""
+    today = datetime.datetime.now()
+    
+    features = {}
+    
+    # Base features
+    features.update({
+        'Longitude': lon, 'Latitude': lat, 'Depth': depth,
+        'Year': today.year, 'Month': today.month, 'Day': today.day,
+        'DayOfWeek': today.weekday(), 'DayOfYear': today.timetuple().tm_yday,
+        'WeekOfYear': today.isocalendar()[1], 'IsWeekend': 1 if today.weekday() >= 5 else 0
+    })
+    
+    # Cyclical encoding
+    features.update({
+        'MonthSin': np.sin(2 * np.pi * today.month / 12),
+        'MonthCos': np.cos(2 * np.pi * today.month / 12),
+        'DayOfYearSin': np.sin(2 * np.pi * today.timetuple().tm_yday / 365),
+        'DayOfYearCos': np.cos(2 * np.pi * today.timetuple().tm_yday / 365),
+        'day_of_year_normalized': today.timetuple().tm_yday / 365.25
+    })
+    
+    # Spatial features
+    features.update({
+        'PrevQuakesInGrid': 5, 'DistFromPrev': 15.0, 'DaysSinceLastQuake': 30.0,
+        'PrevMagnitude': 4.5, 'DepthByLat': depth * lat, 'DepthByLon': depth * lon
+    })
+    
+    # Enhanced fault features
+    weighted_risk = fault_importance / (fault_distance + 1)
+    complexity = fault_importance * np.log(fault_distance + 1)
+    
+    features.update({
+        'distance_to_fault': fault_distance, 'nearest_fault_importance': fault_importance,
+        'weighted_fault_risk': weighted_risk, 'fault_complexity_score': complexity,
+        'fault_count_100km': max(1, int(5 - fault_distance/20)), 'avg_fault_distance': fault_distance,
+        'dominant_fault_importance': fault_importance, 'fault_length_sum': fault_distance * 2,
+        'fault_intersection_count': max(1, int(3 - fault_distance/30)),
+        'fault_intersection_importance': fault_importance * 0.8,
+        'complexity_score': fault_importance * fault_distance / 10,
+        'fault_importance_sum': fault_importance * 1.2
+    })
+    
+    # Density features
+    density_base = 0.001
+    features.update({
+        'density_10km': density_base, 'density_25km': density_base * 2, 
+        'density_50km': density_base * 3, 'density_100km': density_base * 4,
+        'avg_mag_10km': 4.2, 'avg_mag_25km': 4.3, 'avg_mag_50km': 4.4, 'avg_mag_100km': 4.5,
+        'max_mag_10km': 5.0, 'max_mag_25km': 5.2, 'max_mag_50km': 5.5, 'max_mag_100km': 6.0,
+        'mag_std_10km': 0.3, 'mag_std_25km': 0.4, 'mag_std_50km': 0.5, 'mag_std_100km': 0.6,
+        'recent_activity_10km': 2, 'recent_activity_25km': 4, 'recent_activity_50km': 8, 'recent_activity_100km': 15
+    })
+    
+    # Regional activity
+    features.update({
+        'regional_activity_30d': 3, 'regional_activity_90d': 8, 'regional_activity_365d': 25,
+        'regional_max_mag_30d': 4.5, 'regional_max_mag_90d': 5.0, 'regional_max_mag_365d': 5.5
+    })
+    
+    # Interaction features
+    features.update({
+        'depth_magnitude_interaction': depth * 4.5,
+        'location_depth_interaction': lat * lon * depth,
+        'seasonal_location_lat': features['MonthSin'] * lat,
+        'seasonal_location_lon': features['MonthCos'] * lon,
+        'multi_fault_complexity': weighted_risk * features['fault_intersection_count'],
+        'magnitude_fault_interaction': 4.5 / (fault_distance + 1),
+        'weighted_magnitude_interaction': 4.5 * weighted_risk
+    })
+    
+    # Polynomial features
+    features.update({
+        'poly_Depth weighted_fault_risk': depth * weighted_risk,
+        'poly_Depth fault_complexity_score': depth * complexity,
+        'poly_weighted_fault_risk fault_complexity_score': weighted_risk * complexity
+    })
+    
+    return features
 
 def show_model_predictor(df, pipeline, scaler=None):
     """Magnitude prediction interface"""
@@ -150,65 +270,81 @@ def show_model_predictor(df, pipeline, scaler=None):
             st.write(f"**Nearest fault:** {st.session_state.nearest_fault_name}")
             st.write(f"**Distance to fault:** {st.session_state.distance_to_fault:.2f} km")
             st.write(f"**Fault importance:** {st.session_state.nearest_fault_importance}")
-    
-    # Create features dictionary
-    features = {
-        'Longitude': longitude,
-        'Latitude': latitude,
-        'Depth': depth,
-        'distance_to_fault': st.session_state.distance_to_fault,
-        'nearest_fault_importance': st.session_state.nearest_fault_importance
-    }
-    
-    # Add date-related data
-    today = datetime.datetime.now()
-    features['Year'] = today.year
-    features['Month'] = today.month
-    features['Day'] = today.day
-    features['DayOfWeek'] = today.weekday()
+            
+            # Risk level display with emojis
+            risk_level = "High" if st.session_state.distance_to_fault < 10 else "Medium" if st.session_state.distance_to_fault < 25 else "Low"
+            risk_color = "🔴" if risk_level == "High" else "🟡" if risk_level == "Medium" else "🟢"
+            st.write(f"**Risk Level:** {risk_color} {risk_level}")
     
     # Prediction button
-    if st.button("Predict Magnitude", type="primary"):
-        with st.spinner("Calculating prediction..."):
+    if st.button("🔮 Predict Magnitude", type="primary"):
+        with st.spinner("🧠 Calculating prediction..."):
+            # Create complete feature set
+            features = create_complete_feature_set(
+                latitude, longitude, depth,
+                st.session_state.distance_to_fault,
+                st.session_state.nearest_fault_importance
+            )
+            
             # Make prediction
             prediction = predict_magnitude(pipeline, features)
             
             if prediction is not None:
-                # Create result container with highlight
-                result_container = st.container()
-                with result_container:
-                    # Display prediction with colorful gauge
-                    st.subheader(f"Predicted Magnitude: {prediction:.2f}")
-                    
-                    # Add a colorful gauge representation
-                    fig, ax = plt.subplots(figsize=(8, 2))
-                    
-                    # Create a gauge-like visualization
-                    cmap = sns.color_palette("YlOrRd", as_cmap=True)
-                    ax.barh(0, 10, color='lightgray', height=0.4)
-                    ax.barh(0, min(prediction, 10), color=cmap(prediction/10), height=0.4)
-                    
-                    # Add magnitude scale
-                    for i in range(11):
-                        ax.text(i, -0.2, str(i), ha='center', fontsize=10)
-                    
-                    # Add pointer to the predicted value
-                    ax.plot([prediction, prediction], [-0.1, 0.3], 'k-', linewidth=2)
-                    
-                    # Remove axes
-                    ax.axis('off')
-                    ax.set_xlim(0, 10)
-                    ax.set_ylim(-0.3, 0.5)
-                    
-                    st.pyplot(fig)
-                    
-                    # Interpret the prediction
+                # Display results
+                st.success(f"🎯 **Predicted Magnitude: {prediction:.2f}**")
+                
+                # Enhanced gauge visualization
+                fig, ax = plt.subplots(figsize=(10, 3))
+                cmap = plt.cm.get_cmap('RdYlBu_r')
+                ax.barh(0, 10, color='lightgray', height=0.6, alpha=0.3)
+                ax.barh(0, min(prediction, 10), color=cmap(prediction/10), height=0.6)
+                
+                # Add magnitude markers
+                for i in range(11):
+                    ax.axvline(i, color='black', alpha=0.3, linewidth=0.5)
+                    ax.text(i, -0.4, str(i), ha='center', fontsize=10)
+                
+                # Prediction pointer
+                ax.plot([prediction, prediction], [-0.2, 0.8], 'k-', linewidth=3)
+                ax.text(prediction, 1.0, f'{prediction:.2f}', ha='center', fontweight='bold', fontsize=12)
+                
+                # Styling
+                ax.set_xlim(0, 10)
+                ax.set_ylim(-0.5, 1.2)
+                ax.axis('off')
+                ax.set_title('Magnitude Prediction', fontsize=14, fontweight='bold')
+                
+                st.pyplot(fig)
+                
+                # Enhanced interpretation with emojis
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
                     if prediction < 5.0:
-                        st.info("This is predicted to be a moderate earthquake.")
+                        st.info("🟢 **Moderate Earthquake**\nMinor to light damage expected")
                     elif prediction < 6.0:
-                        st.warning("This is predicted to be a strong earthquake.")
+                        st.warning("🟡 **Strong Earthquake**\nModerate damage possible")
                     else:
-                        st.error("This is predicted to be a major earthquake!")
+                        st.error("🔴 **Major Earthquake**\nSerious damage expected")
+                
+                with col2:
+                    # Risk assessment based on location
+                    fault_risk = st.session_state.distance_to_fault
+                    if fault_risk < 10:
+                        st.error("⚠️ **High Fault Risk**\nVery close to major fault")
+                    elif fault_risk < 25:
+                        st.warning("⚡ **Medium Fault Risk**\nModerate distance from fault")
+                    else:
+                        st.success("✅ **Lower Fault Risk**\nFar from major faults")
+                
+                with col3:
+                    # Population impact estimate
+                    if prediction >= 6.0:
+                        st.error("🏘️ **High Impact**\nWide area affected")
+                    elif prediction >= 5.0:
+                        st.warning("🏠 **Medium Impact**\nLocal area affected")
+                    else:
+                        st.info("🏡 **Low Impact**\nMinimal area affected")
     
     # Show feature importance in an expander
     with st.expander("Feature Importance Analysis", expanded=False):
@@ -216,16 +352,7 @@ def show_model_predictor(df, pipeline, scaler=None):
             model_component = pipeline.named_steps['model']
             if hasattr(model_component, 'feature_importances_'):
                 # Get the list of features used during training
-                feature_names = ['Longitude', 'Latitude', 'Depth', 'Year', 'Month', 'Day', 'DayOfWeek',
-                                'DayOfYear', 'WeekOfYear', 'IsWeekend', 'MonthSin', 'MonthCos', 
-                                'DayOfYearSin', 'DayOfYearCos', 'PrevQuakesInGrid', 'DistFromPrev',
-                                'DaysSinceLastQuake', 'PrevMagnitude', 'DepthByLat', 'DepthByLon']
-                
-                # Add fault features if they exist in the dataset
-                if 'distance_to_fault' in df.columns:
-                    feature_names.extend(['distance_to_fault', 'nearest_fault_importance', 
-                                        'fault_count_50km', 'fault_length_50km', 'fault_density',
-                                        'magnitude_fault_interaction'])
+                feature_names = get_all_expected_features()
                 
                 # Trim or pad feature names list to match feature importances length
                 importance_len = len(model_component.feature_importances_)
@@ -257,50 +384,23 @@ def predict_magnitude(pipeline, features):
         st.error("Model not found. Please train a model first.")
         return None
     
-    # Convert features to DataFrame with only provided features
-    df = pd.DataFrame([features])
-    
-    # Get all expected feature names the pipeline was trained with
-    required_features = ['Longitude', 'Latitude', 'Depth', 'Year', 'Month', 'Day', 
-                        'DayOfWeek', 'DayOfYear', 'WeekOfYear', 'IsWeekend', 
-                        'MonthSin', 'MonthCos', 'DayOfYearSin', 'DayOfYearCos',
-                        'PrevQuakesInGrid', 'DistFromPrev', 'DaysSinceLastQuake', 
-                        'PrevMagnitude', 'DepthByLat', 'DepthByLon', 
-                        'fault_count_50km', 'fault_length_50km', 'fault_density',
-                        'magnitude_fault_interaction']
-    
-    # Set default values for missing features
-    for feature in required_features:
-        if feature not in df.columns:
-            # If temporal feature, use reasonable defaults
-            if feature in ['DayOfYear', 'WeekOfYear']:
-                today = datetime.datetime.now()
-                df[feature] = today.timetuple().tm_yday if feature == 'DayOfYear' else today.isocalendar()[1]
-            elif feature == 'IsWeekend':
-                df[feature] = 1 if df['DayOfWeek'].iloc[0] >= 5 else 0
-            # For cyclical features
-            elif feature == 'MonthSin':
-                df[feature] = np.sin(2 * np.pi * df['Month'] / 12)
-            elif feature == 'MonthCos':
-                df[feature] = np.cos(2 * np.pi * df['Month'] / 12)
-            elif feature == 'DayOfYearSin':
-                day_of_year = datetime.datetime.now().timetuple().tm_yday
-                df[feature] = np.sin(2 * np.pi * day_of_year / 365)
-            elif feature == 'DayOfYearCos':
-                day_of_year = datetime.datetime.now().timetuple().tm_yday
-                df[feature] = np.cos(2 * np.pi * day_of_year / 365)
-            # For interaction features
-            elif feature == 'DepthByLat':
-                df[feature] = df['Depth'] * df['Latitude']
-            elif feature == 'DepthByLon':
-                df[feature] = df['Depth'] * df['Longitude']
-            elif feature == 'magnitude_fault_interaction' and 'distance_to_fault' in df.columns:
-                df[feature] = 5 / (df['distance_to_fault'] + 1)  # Assuming magnitude ~5
-            # Default values for other features
-            else:
+    try:
+        # Create DataFrame with all expected features
+        expected_features = get_all_expected_features()
+        df = pd.DataFrame([features])
+        
+        # Ensure all columns exist
+        for feature in expected_features:
+            if feature not in df.columns:
                 df[feature] = 0
-    
-    # Make prediction (pipeline handles preprocessing)
-    prediction = pipeline.predict(df)
-    
-    return prediction[0]
+        
+        # Reorder columns to match training
+        df = df[expected_features]
+        
+        # Make prediction (pipeline handles preprocessing)
+        prediction = pipeline.predict(df)
+        
+        return prediction[0]
+    except Exception as e:
+        st.error(f"Prediction error: {str(e)}")
+        return None
