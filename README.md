@@ -67,7 +67,7 @@ The project is deployed as an interactive Streamlit application with:
 ## Results & Findings
 
 ### Supervised Learning
-- The best-performing model was XGBoost with RMSE of 0.2309 and R² of 0.847
+- The best-performing model was LightGBM with RMSE of 0.1032 and R² of 0.9502
 - Most important features included: multi-fault weighted risk, spatial density measures, fault complexity scores, and temporal patterns
 - Multi-fault analysis significantly outperformed single nearest-fault approaches
 
