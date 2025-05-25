@@ -73,7 +73,7 @@ def show_kmeans_analysis(df):
     st.write("### 3D Cluster Visualization")
     
     # Check for pre-rendered visualizations
-    kmeans_map_path = "maps/kmeans_clusters_3d.html"
+    kmeans_map_path = "maps/enhanced_kmeans_clusters_3d.html"
     
     if os.path.exists(kmeans_map_path):
         st.components.v1.html(open(kmeans_map_path, 'r', encoding='utf-8').read(), height=600)
@@ -130,7 +130,7 @@ def show_dbscan_analysis(df):
     st.write("### 3D Cluster Visualization")
     
     # Check for pre-rendered visualizations
-    dbscan_map_path = "maps/dbscan_clusters_3d.html"
+    dbscan_map_path = "maps/enhanced_dbscan_clusters_3d.html"
     
     if os.path.exists(dbscan_map_path):
         st.components.v1.html(open(dbscan_map_path, 'r', encoding='utf-8').read(), height=600)

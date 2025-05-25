@@ -55,7 +55,7 @@ def show_risk_zone_analysis(df, fault_gdf, has_risk_data):
     st.write("### Earthquake Density Heatmap")
     st.write("Areas with higher earthquake density generally have higher seismic risk.")
     
-    density_map_path = "maps/earthquake_density_map.html"
+    density_map_path = "maps/enhanced_earthquake_density_map.html"
     if os.path.exists(density_map_path):
         st.components.v1.html(open(density_map_path, 'r', encoding='utf-8').read(), height=600)
     else:
@@ -158,7 +158,7 @@ def show_city_risk_analysis(df, fault_gdf, city_risk_df):
         # Display pre-rendered city risk map
         st.write("### City Risk Map")
         
-        city_risk_map_path = "maps/city_earthquake_risk_map.html"
+        city_risk_map_path = "maps/enhanced_city_earthquake_risk_map.html"
         if os.path.exists(city_risk_map_path):
             st.components.v1.html(open(city_risk_map_path, 'r', encoding='utf-8').read(), height=600)
         else:

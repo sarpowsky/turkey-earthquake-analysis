@@ -16,10 +16,10 @@ def show_map_viewer(df, fault_gdf):
     
     # Map file paths
     map_files = {
-        "Earthquake Distribution": "maps/earthquake_map.html",
-        "K-Means Clusters": "maps/kmeans_clusters_map.html",
-        "DBSCAN Clusters": "maps/dbscan_clusters_map.html",
-        "Risk Zones": "maps/earthquake_risk_map.html"
+        "Earthquake Distribution": "maps/enhanced_earthquake_map.html",
+        "K-Means Clusters": "maps/enhanced_kmeans_clusters_map.html",
+        "DBSCAN Clusters": "maps/enhanced_dbscan_clusters_map.html",
+        "Risk Zones": "maps/enhanced_earthquake_risk_map.html"
     }
     
     # Display selected map description

@@ -27,19 +27,32 @@ def load_fault_data():
         return None
 
 def load_model():
-    """Load the trained earthquake prediction model"""
+    """Load the trained earthquake prediction models"""
     try:
-        # Try to load the pipeline (new approach)
-        pipeline = joblib.load('models/earthquake_pipeline.pkl')
-        return pipeline, None  # Return None for scaler for compatibility
+        # Load enhanced pipeline
+        pipeline = joblib.load('models/enhanced_earthquake_pipeline.pkl')
+        return pipeline, None
     except FileNotFoundError:
         try:
-            # Fallback to old approach
-            model = joblib.load('models/earthquake_magnitude_model.pkl')
-            scaler = joblib.load('models/earthquake_scaler.pkl')
-            return model, scaler
+            # Fallback to original
+            pipeline = joblib.load('models/earthquake_pipeline.pkl')
+            return pipeline, None
         except FileNotFoundError:
             return None, None
+
+def load_pytorch_model():
+    """Load PyTorch model if available"""
+    try:
+        import torch
+        from models.load_pytorch_model import load_model as load_torch_model
+        
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        model = load_torch_model('models/enhanced_earthquake_pytorch_model.pt', 
+                                input_size=80, device=device)  # Adjust input_size
+        scaler = joblib.load('models/enhanced_pytorch_scaler.pkl')
+        return model, scaler, device
+    except:
+        return None, None, None
         
 def get_city_risk_data():
     """Load or generate city risk assessment data"""

@@ -106,10 +106,10 @@ def apply_custom_css():
 def display_map_preview():
     """Display a map preview if available or show placeholder"""
     # Check if map file exists
-    if os.path.exists("maps/earthquake_map.html"):
-        st.components.v1.html(open("maps/earthquake_map.html", 'r', encoding='utf-8').read(), height=300)
-    elif os.path.exists("maps/earthquake_risk_map.html"):
-        st.components.v1.html(open("maps/earthquake_risk_map.html", 'r', encoding='utf-8').read(), height=300)
+    if os.path.exists("maps/enhanced_earthquake_map.html"):
+        st.components.v1.html(open("maps/enhanced_earthquake_map.html", 'r', encoding='utf-8').read(), height=300)
+    elif os.path.exists("maps/enhanced_earthquake_risk_map.html"):
+        st.components.v1.html(open("maps/enhanced_earthquake_risk_map.html", 'r', encoding='utf-8').read(), height=300)
 
 def display_features_grid():
     """Display application features in a responsive grid layout"""
